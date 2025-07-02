@@ -1,0 +1,287 @@
+---
+title: "Identifying Optimal Locations to provide Affordable Insurance"
+author: "SID 541032306"
+format: 
+  html:
+    theme: cyborg
+    embed-resources: true
+    toc: true
+    code-fold: true
+---
+
+------------------------------------------------------------------------
+
+## 1 Client Bio 👤
+
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------+
+| Ravee P Rao ([Linkedin](https://www.linkedin.com/in/ravikutumbarao/))                                                                                                                                                                                                                                   | ![](images/father.png){width="900"} |
+|                                                                                                                                                                                                                                                                                                         |                                     |
+| Insurance Professional for Union Insurance                                                                                                                                                                                                                                                              |                                     |
+|                                                                                                                                                                                                                                                                                                         |                                     |
+| Mr Ravee holds the responsibilty of handling the company insurance policies and work on expansion of company services.This includes coming up with new insurances and also work out where to introduce said insurances emphasising on locations requiring cheap capital to cover unprofitable policies. |                                     |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------+
+
+------------------------------------------------------------------------
+
+## 2 Recommendation 📍
+
+Union Insurance right now only provides insurance to the GCC regions neglecting other necessary parts of Asia and Europe. Upon data analysis it has been demonstrated that there is a correlation between total people affected and total insured damages ,therefore a lack of people being affected shows low costs of required capital to engage new profitable insurances. Countries like Pakistan, Iran, Thailand,Malaysia,Indonesia,Myanmar and Philippines Greece, Serbia, Slovakia exhibit low casualties and insured damages and a focus on these countries can mean a affordable expansion.
+
+------------------------------------------------------------------------
+
+## 3 Evidence ✅
+
+```{r, warning = FALSE, message = FALSE, include = FALSE}
+data=read.csv("natural-disasters.csv")
+data2=read.csv("natural-disasters_peryear_country-csv.csv")
+```
+
+To find the next location for an affordable expansion for new insurances
+
+### 3.1 Correlation Between total people affected and insured damages
+
+```{r, echo = TRUE, warning = FALSE, message = FALSE}
+library(ggplot2)
+library(plotly)
+
+plot=ggplot(data, aes(x = Number.of.total.people.affected.by.disasters, 
+                                       y = Insured.damages.against.disasters, colour = Entity)) +  
+  geom_point(size = 2, show.legend = FALSE)+ 
+  geom_smooth(aes(x = Number.of.total.people.affected.by.disasters, 
+                  y = Insured.damages.against.disasters), 
+              method = "lm", se = FALSE, color = "black") +  
+  labs(title = "Scatter Plot of Insured Damages vs. Affected Rate",
+       x = "Total Affected Rate per 100k",
+       y = "Total Insured Damages") +
+  theme_minimal() +  
+  theme(legend.position = "none") +  
+  scale_x_continuous(trans = "log2") +  
+  scale_y_continuous(trans = "log2") 
+l = ggplotly(plot)
+l
+```
+
+Correlation: 0.369 (slight positive correlation)
+
+Total people affected can be an indication of the total insured damages concurred. Therefore a linear model was used to validate the correlation and find a new region for expansion. The model shows a positive correlation between the total people affected and insured damages. This [Article](https://www.cambridge.org/core/journals/astin-bulletin-journal-of-the-iaa/article/insurance-and-the-natural-hazards/C821A70B8B0022B6615EA7C2E31B73E5?utm_campaign=shareaholic&utm_medium=copy_link&utm_source=bookmark) substantiates the claim presented in which it says insurance is a way to protect property value and factors like natural disasters drive the price upwards creating a relationship.
+
+------------------------------------------------------------------------
+
+### 3.2 Target Area for Expansion
+
+Based on the data, it would be most economical to focus on countries in Asia and Europe. The majority of these countries show low numbers of people affected by natural disasters and minimal insured damages, as depicted in the map below.
+
+```{r, warning = FALSE, message = FALSE}
+library(sf)
+library(ggplot2)
+library(dplyr)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(plotly)
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+asia_map  <- world %>% 
+  filter(continent %in% c("Asia", "Europe"))
+
+merged_map_data <- asia_map %>%
+  left_join(data, by = c("name" = "Entity"))  
+choropleth_plot <- ggplot(data = merged_map_data) +
+  geom_sf(aes(fill = Number.of.total.people.affected.by.disasters)) +  
+  scale_fill_viridis_c(option = "plasma", na.value = "grey90", name = "People affected") +coord_sf(xlim = c(-40, 180), ylim = c(5, 80), expand = FALSE) + 
+  labs(title = "People affected due to natural disasters Across Asia and Europe",
+       x = "Longitude",
+       y = "Latitude") +
+  theme_minimal() +
+  theme(axis.text = element_blank(),
+        axis.title = element_blank(),
+        panel.grid = element_blank())
+
+# Show the plot
+choropleth_plot
+
+```
+
+------------------------------------------------------------------------
+
+### 3.3 How susceptible is each region?
+
+```{r, warning = FALSE, message = FALSE}
+library(ggplot2)
+library(dplyr)
+
+
+data2$Start.Year <- as.numeric(as.character(data2$Start.Year))
+
+country_counts_2000_2015 <- data2 %>%
+  filter(Start.Year >= 2000 & Start.Year <= 2015) %>%  
+  group_by(Region) %>%  
+  summarize(count = n(), .groups = 'drop')  
+
+
+bar_plot <- ggplot(country_counts_2000_2015, aes(x = reorder(Region, count), y = count)) +  
+  geom_bar(stat = "identity", fill = "black", width = 0.5) +  
+  labs(title = "Occurrences of Natural Disaster",
+       x = "Region",
+       y = "Occurrences") +
+  theme_minimal() +  
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  
+
+print(bar_plot)
+```
+
+To find a region that is less susceptible to natural disasters , a bar-plot has been utilized segregating the number of occurrences of natural disasters in each region throughout 2000 to 2015. Upon Analysis countries in the region like Europe or Asia are the least and most susceptible, but Asia is not going to be excluded as from the previous map we can see majority of countries are as unlikely to be hit by a natural disaster, supporting the data analysis.
+
+------------------------------------------------------------------------
+
+### 4 Hypothesis testing
+
+To test the claim:
+
+"There is a correlation between people affected and insured damages"
+
+A t-test was conducted with a significance value (ɑ-value) of 0.05. The claim has a significant change as p-value \< ɑ-value. The result is as below
+
+p-value\<2.2e-16
+
+p-value \< ɑ-value
+
+Therefor the total affected people play a role in insured damages and hence demonstrates the need for the expansion to happen is countries with the least affected people to ensure profitable insurance policies.
+
+------------------------------------------------------------------------
+
+## 5 References 📚
+
+Friedman, D.G. (1972) ‘Insurance and the natural hazards’, ASTIN Bulletin, 7(1), pp. 4–58. doi:10.1017/S0515036100005699.
+
+Emdat.be. (2021). Available at: https://public.emdat.be.
+
+‌Geojson-maps.kyd.au. (2023). *GeoJSON Maps*. \[online\] Available at: https://geojson-maps.kyd.au .
+
+------------------------------------------------------------------------
+
+## 6‌ Appendix 🔎
+
+::: panel-tabset
+## Linear modelling and barplot
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+# Remove rows with NA, NaN, or Inf values in the relevant columns
+clean_data <- data %>%
+  filter(Number.of.total.people.affected.by.disasters > 0 & 
+         Insured.damages.against.disasters > 0)
+
+clean_data$log_affect <- log(clean_data$Number.of.total.people.affected.by.disasters)
+clean_data$log_damage <- log(clean_data$Insured.damages.against.disasters)
+
+
+model <- lm(log_damage ~ log_affect, data = clean_data)
+
+residuals <- resid(model)
+fitted_values <- fitted(model)
+
+
+residual_plot <- ggplot(clean_data, aes(x = fitted_values, y = residuals)) +
+  geom_point() +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Residual Plot", x = "Fitted Values", y = "Residuals") +
+  theme_minimal()
+
+# Make the residual plot interactive
+plotly_residual_plot = ggplotly(residual_plot)
+plotly_residual_plot
+
+```
+
+Residual Plot is homoscedastic and hence appropriate
+
+## Client Choice
+
+Insured damages to natural disasters plays a vital role in capital management and value of a insurance company. Choosing a client such as ravee who is well versed in insurance and plays a key role in big insurance companies was a necessity as this report could be of the company's benefit in the long run.
+
+## Hypothesis Testing
+
+Hypothesis:
+
+-H~0~ : There is no relation between people affected and insured damages
+
+-H~1~ : There is a relation between people affected and insured damages
+
+Assumptions:
+
+Independence: Each data point is independent of each other and does not influence the value of another
+
+Normality of Variables: All data points are normally distributed as shown in the QQ-plot
+
+```{r}
+library(dplyr)
+
+filtered_data <- data %>%
+  filter(Number.of.total.people.affected.by.disasters > 0 & 
+         Insured.damages.against.disasters > 0)
+
+
+filtered_data$log_affect <- log(filtered_data$Number.of.total.people.affected.by.disasters)
+filtered_data$log_damage <- log(filtered_data$Insured.damages.against.disasters)
+
+
+model <- lm(log_damage ~ log_affect, data = filtered_data)
+
+residuals <- resid(model)
+
+qqnorm(residuals)
+qqline(residuals)
+```
+
+```{r}
+# Shapiro-Wilk test for normality
+shapiro.test(residuals)
+```
+
+This shows that the distribution is normal and we can proceed with the t-test
+
+Test -Statistic and p-value
+
+```{r}
+# Perform the correlation test (which uses a t-test internally)
+correlation_test <- cor.test(data$Number.of.total.people.affected.by.disasters, 
+                             data$Insured.damages.against.disasters)
+
+# View the results
+print(correlation_test)
+```
+
+Conclusion: Reject H~0~
+
+## Limitations
+
+-   The data set contains a lot of missing values for crucial variables
+
+-   The Map color is hard to distinguish
+
+-   Scale of variables is hard to interpret as they are in log values
+:::
+
+------------------------------------------------------------------------
+
+## 7 Ethics Statement
+
+-   **Respect** was observed by maintaining the anonymity of the data, thereby safeguarding participants' privacy and confidentiality. 
+
+-   Moreover, the ethical principle of **Conflicting** **Interests** was adhered to, as the research was conducted without any financial gain and the indications drawn from the data had no impact on academic marks, ensuring that there were no personal or financial conflicts influencing the outcomes.
+
+------------------------------------------------------------------------
+
+## 8 Acknowledgements 📝
+
+### Ed post
+
+-   Using external CSV for data: <https://edstem.org/au/courses/16787/discussion/2280896>
+
+### Themes used
+
+Themes used were sourced from [Quarto Themes](https://quarto.org/docs/output-formats/html-themes.html)
+
+------------------------------------------------------------------------
