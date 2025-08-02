@@ -1,58 +1,87 @@
-# Identifying Optimal Locations to Provide Affordable Insurance
+# 🌍 Disaster Data Analysis for Optimal Insurance Coverage 🏥📊
+
+This project analyzes natural disaster datasets to identify regions with low-risk profiles ideal for expanding affordable insurance coverage. It combines geospatial analysis, correlation insights, and hypothesis testing to support data-driven decisions for insurance strategy.
 
 ---
 
-## Overview
+## 📌 Project Overview
 
-This project analyzes global natural disaster data to identify regions where Union Insurance can expand its offerings with minimal capital risk. By examining correlations between people affected by disasters and insured damages, we recommend target countries in Asia and Europe that present affordable opportunities for profitable insurance policies.
+Insurance companies often face challenges in identifying profitable regions for coverage expansion, especially when balancing affordability with risk. This project provides actionable insights by:
 
-## Methodology
+- Analyzing correlations between natural disasters and insured damages
+- Identifying countries with low casualties and damage
+- Recommending optimal expansion zones for affordable insurance plans
 
-1. **Data Sources**
+---
 
-   * `natural-disasters.csv`: Annual disaster impact and insured damage figures
-   * `natural-disasters_peryear_country-csv.csv`: Detailed disaster occurrences by country and year
+## 🧾 Methodology
 
-2. **Correlation Analysis**
+1. **Data Collection**  
+   - Global disaster records sourced from EM-DAT and other public datasets
+   - Variables include event type, affected population, casualties, and damages
 
-   * Computed Pearson correlation between total people affected and insured damages (ρ ≈ 0.369).
-   * Fitted a log–log linear regression model to validate relationship and support expansion strategy.
+2. **Data Cleaning & Wrangling**  
+   - Removed incomplete or inconsistent records
+   - Standardized country names, time frames, and damage units
 
-3. **Geospatial Visualization**
+3. **Exploratory Data Analysis (EDA)**  
+   - Trends in disaster frequency by region
+   - Correlation between damages and population affected
+   - Identification of outlier events
 
-   * Mapped disaster-affected population across Asia and Europe using `rnaturalearth` and `sf`.
-   * Highlighted countries with consistently low impact.
+4. **Statistical Analysis**  
+   - Correlation matrix to find significant relationships
+   - Hypothesis testing to validate assumptions about low-risk zones
 
-4. **Susceptibility Assessment**
+5. **Geospatial Visualization**  
+   - Interactive maps highlighting high vs low risk zones
+   - Target region flags for expansion consideration
 
-   * Counted disaster occurrences by region (2000–2015) to gauge susceptibility.
-   * Identified Asia and Europe as relatively low-risk regions.
+---
 
-5. **Hypothesis Testing**
+## 📍 Key Insights
 
-   * Null hypothesis (H₀): No relation between disaster-affected population and insured damages.
-   * Alternative hypothesis (H₁): Positive relation exists.
-   * Performed t-test on correlation; p-value < 2.2e‑16 → Reject H₀.
+- Countries like **Thailand, Malaysia, Pakistan, Serbia, and Greece** show low levels of both casualties and insured damages.
+- These regions present a **low-capital requirement** opportunity for launching or expanding insurance products.
+- A strong correlation was found between total affected and total damages, validating the use of casualty data as a proxy for financial risk.
 
+---
 
-## Installation & Usage
+## 🛠️ Tools & Technologies
 
-1. Clone the repository:
+- **R Language** (Data wrangling, hypothesis testing, visualization)
+- **Quarto / QMD Reports** (Professional client-facing reporting)
+- **ggplot2, dplyr, leaflet, sf** (Visualization and geospatial tools)
 
-   ```bash
-   git clone https://github.com/<username>/insurance-expansion-analysis.git
-   cd insurance-expansion-analysis
-   ```
-2. Install dependencies:
+---
 
-   ```r
-   install.packages(c("ggplot2", "plotly", "sf", "dplyr", "rnaturalearth", "rnaturalearthdata"))
-   ```
-3. Run the analysis in Quarto or RStudio:
+## 📊 Visualizations
 
-   ```bash
-   quarto render README.qmd
-   ```
+- Heatmaps showing disaster impact by country
+- Choropleth maps for insured damages and affected population
+- Scatter plots revealing disaster-damage correlations
+
+---
+
+## 🔍 Future Improvements
+
+- Integrate real-time disaster monitoring APIs (e.g. GDACS)
+- Incorporate socioeconomic factors like GDP, HDI, and insurance penetration
+- Build a dashboard for dynamic region selection and premium simulations
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgements
+
+- EM-DAT International Disaster Database
+- RStudio and Quarto documentation
+- Academic literature on insurance risk modeling and geospatial analysis
 
 ---
 
